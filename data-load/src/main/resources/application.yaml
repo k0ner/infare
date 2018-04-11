@@ -1,0 +1,6 @@
+infare.input.url: https://infare-dev-external-dpcandidate.s3.amazonaws.com/hive_csv_altus_gz/part-00000.gz
+
+cassandra:
+  hosts: localhost
+  port: 9042
+  replication.factor: 1
