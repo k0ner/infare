@@ -1,10 +1,9 @@
-package load.direct.aws;
-
-import com.google.common.collect.Iterators;
+package load.direct;
 
 import com.datastax.driver.core.BatchStatement;
 import com.datastax.driver.core.BoundStatement;
 import com.datastax.driver.core.PreparedStatement;
+import com.google.common.collect.Iterators;
 
 import java.util.List;
 import java.util.Spliterator;

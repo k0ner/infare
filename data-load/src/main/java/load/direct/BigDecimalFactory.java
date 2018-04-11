@@ -1,4 +1,4 @@
-package load.direct.aws;
+package load.direct;
 
 import java.math.BigDecimal;
 import java.math.MathContext;

@@ -1,13 +1,12 @@
-package load.direct.aws.configuration;
+package load.direct.configuration;
 
 import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.Session;
+import load.direct.CassandraSink;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
-import load.direct.aws.CassandraSink;
 
 @Configuration
 public class CassandraConfiguration {

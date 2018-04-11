@@ -1,25 +1,18 @@
-package load.direct.aws;
-
-import com.google.common.util.concurrent.FutureCallback;
-import com.google.common.util.concurrent.Futures;
+package load.direct;
 
 import com.datastax.driver.core.BatchStatement;
 import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.ResultSetFuture;
 import com.datastax.driver.core.Session;
 import com.datastax.driver.core.Statement;
+import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.Futures;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.Executor;
 import java.util.concurrent.Semaphore;
-
-import static load.direct.aws.Metrics.failedExecutions;
-import static load.direct.aws.Metrics.failedInserts;
-import static load.direct.aws.Metrics.inserts;
-import static load.direct.aws.Metrics.succeededExecutions;
-import static load.direct.aws.Metrics.succeededInserts;
 
 public class CassandraLoader {
 
@@ -47,7 +40,7 @@ public class CassandraLoader {
 
         semaphore.acquire();
 
-        inserts.mark(numberOfRows);
+        Metrics.inserts.mark(numberOfRows);
 
         final ResultSetFuture future = session.executeAsync(statement);
 
@@ -66,15 +59,15 @@ public class CassandraLoader {
 
         @Override
         public void onSuccess(ResultSet result) {
-            succeededExecutions.mark();
-            succeededInserts.mark(numberOfRows);
+            Metrics.succeededExecutions.mark();
+            Metrics.succeededInserts.mark(numberOfRows);
             semaphore.release();
         }
 
         @Override
         public void onFailure(Throwable t) {
-            failedExecutions.mark();
-            failedInserts.mark(numberOfRows);
+            Metrics.failedExecutions.mark();
+            Metrics.failedInserts.mark(numberOfRows);
             semaphore.release();
             log.error("exception", t);
         }

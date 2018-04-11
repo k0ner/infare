@@ -1,20 +1,21 @@
-package load.direct.aws;
+package load.direct;
 
 import java.io.BufferedReader;
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.URI;
+import java.nio.file.Path;
 import java.util.stream.Stream;
 import java.util.zip.GZIPInputStream;
 
-public class HttpFileInputSource implements InfareInputSource, AutoCloseable {
+public class FileInputSource implements InfareInputSource, AutoCloseable {
 
-    private final String url;
-    private InputStream httpInputStream;
+    private final Path path;
+    private InputStream inputStream;
     private BufferedReader bufferedReader;
 
-    public HttpFileInputSource(String url) {
-        this.url = url;
+    FileInputSource(Path path) {
+        this.path = path;
     }
 
     @Override
@@ -27,8 +28,8 @@ public class HttpFileInputSource implements InfareInputSource, AutoCloseable {
     }
 
     private Stream<InfareRecord> httpStream() throws Exception {
-        httpInputStream = new URI(url).toURL().openStream();
-        bufferedReader = new BufferedReader(new InputStreamReader(new GZIPInputStream(httpInputStream)));
+        inputStream = new FileInputStream(path.toFile());
+        bufferedReader = new BufferedReader(new InputStreamReader(new GZIPInputStream(inputStream)));
 
         return bufferedReader
                 .lines()
@@ -38,6 +39,6 @@ public class HttpFileInputSource implements InfareInputSource, AutoCloseable {
     @Override
     public void close() throws Exception {
         bufferedReader.close();
-        httpInputStream.close();
+        inputStream.close();
     }
 }

@@ -1,6 +1,11 @@
-package load.direct.aws.configuration;
+package load.direct.configuration;
 
 import com.datastax.driver.core.Session;
+import load.direct.CassandraLoader;
+import load.direct.CassandraSink;
+import load.direct.HttpFileInputSource;
+import load.direct.InfareInputSource;
+import load.direct.Inserts;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -10,12 +15,6 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.Semaphore;
-
-import load.direct.aws.CassandraLoader;
-import load.direct.aws.CassandraSink;
-import load.direct.aws.HttpFileInputSource;
-import load.direct.aws.InfareInputSource;
-import load.direct.aws.Inserts;
 
 @Configuration
 public class LoaderConfiguration {

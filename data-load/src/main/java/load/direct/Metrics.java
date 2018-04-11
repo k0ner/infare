@@ -1,4 +1,4 @@
-package load.direct.aws;
+package load.direct;
 
 import com.codahale.metrics.ConsoleReporter;
 import com.codahale.metrics.Meter;

@@ -1,4 +1,4 @@
-package load.direct.aws;
+package load.direct;
 
 import com.datastax.driver.core.BoundStatement;
 import com.datastax.driver.core.PreparedStatement;

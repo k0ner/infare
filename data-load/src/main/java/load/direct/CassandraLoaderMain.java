@@ -1,4 +1,4 @@
-package load.direct.aws;
+package load.direct;
 
 import com.codahale.metrics.ConsoleReporter;
 import com.datastax.driver.core.BatchStatement;
@@ -11,8 +11,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
-
-import static load.direct.aws.Metrics.metricRegistry;
 
 @SpringBootApplication
 public class CassandraLoaderMain implements CommandLineRunner {
@@ -34,7 +32,7 @@ public class CassandraLoaderMain implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        ConsoleReporter reporter = ConsoleReporter.forRegistry(metricRegistry)
+        ConsoleReporter reporter = ConsoleReporter.forRegistry(Metrics.metricRegistry)
                 .convertRatesTo(TimeUnit.SECONDS)
                 .convertDurationsTo(TimeUnit.MILLISECONDS)
                 .build();
