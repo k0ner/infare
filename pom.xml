@@ -9,9 +9,14 @@
     <version>0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
 
+    <properties>
+        <spring-boot-dependencies.version>2.0.0.RELEASE</spring-boot-dependencies.version>
+    </properties>
+
     <modules>
         <module>data-load</module>
         <module>average-prices</module>
+        <module>rest-service</module>
     </modules>
 
 </project>

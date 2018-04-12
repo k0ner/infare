@@ -1,0 +1,5 @@
+cassandra:
+  keyspace: infare
+  table: prices
+  hosts: localhost
+  port: 9042

@@ -13,10 +13,6 @@
     <artifactId>data-load</artifactId>
     <version>0.2-SNAPSHOT</version>
 
-    <properties>
-        <spring-boot-dependencies.version>2.0.0.RELEASE</spring-boot-dependencies.version>
-    </properties>
-
     <dependencyManagement>
         <dependencies>
             <dependency>
