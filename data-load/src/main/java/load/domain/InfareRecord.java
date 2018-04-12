@@ -1,7 +1,8 @@
-package load.direct;
+package load.domain;
 
 import com.datastax.driver.core.BoundStatement;
 import com.datastax.driver.core.PreparedStatement;
+import load.direct.BigDecimalFactory;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
@@ -11,12 +12,13 @@ import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import static java.util.Arrays.asList;
 
-class InfareRecord {
+public class InfareRecord {
 
-    static final List<String> columns = asList(
+    public static final List<String> columns = asList(
             "week", "min_dte", "max_dte", "weeks_bef", "c_id", "class", "site", "s_type", "one_way", "orig", "dest",
             "min_stay", "price_min", "price_max", "price_avg", "agg_cnt", "out_dep_dte", "out_dep_time", "out_fl_dur",
             "out_sec_cnt", "out_sec_1", "out_sec_2", "out_sec_3", "hm_dep_dte", "hm_dep_time", "hm_fl_dur",
@@ -24,35 +26,35 @@ class InfareRecord {
 
     private static final Pattern tab = Pattern.compile("\\t");
 
-    final Integer observedDateMinAsInfaredate;
-    final Integer observedDateMaxAsInfaredate;
-    final Integer fullWeeksBeforeDeparture;
-    final Integer carrierId;
-    final String searchedCabinClass;
-    final Integer bookingSiteId;
-    final Integer bookingSiteTypeId;
-    final Boolean isTripOneWay;
-    final Integer tripOriginAirportId;
-    final Integer tripDestinationAirportId;
-    final Optional<Integer> tripMinStay;
-    final BigDecimal tripPriceMin;
-    final BigDecimal tripPriceMax;
-    final BigDecimal tripPriceAvg;
-    final Integer aggregationCount;
-    final Integer outFlightDepartureDateAsInfaredate;
-    final Integer outFlightDepartureTimeAsInfaretime;
-    final Optional<Integer> outFlightTimeInMinutes;
-    final Integer outSectorCount;
-    final Integer outFlightSector1FlightCodeId;
-    final Optional<Integer> outFlightSector2FlightCodeId;
-    final Optional<Integer> outFlightSector3FlightCodeId;
-    final Optional<Integer> homeFlightDepartureDateAsInfaredate;
-    final Optional<Integer> homeFlightDepartureTimeAsInfaretime;
-    final Optional<Integer> homeFlightTimeInMinutes;
-    final Integer homeSectorCount;
-    final Optional<Integer> homeFlightSector1FlightCodeId;
-    final Optional<Integer> homeFlightSector2FlightCodeId;
-    final Optional<Integer> homeFlightSector3FlightCodeId;
+    public final Integer observedDateMinAsInfaredate;
+    public final Integer observedDateMaxAsInfaredate;
+    public final Integer fullWeeksBeforeDeparture;
+    public final Integer carrierId;
+    public final String searchedCabinClass;
+    public final Integer bookingSiteId;
+    public final Integer bookingSiteTypeId;
+    public final Boolean isTripOneWay;
+    public final Integer tripOriginAirportId;
+    public final Integer tripDestinationAirportId;
+    public final Optional<Integer> tripMinStay;
+    public final BigDecimal tripPriceMin;
+    public final BigDecimal tripPriceMax;
+    public final BigDecimal tripPriceAvg;
+    public final Integer aggregationCount;
+    public final Integer outFlightDepartureDateAsInfaredate;
+    public final Integer outFlightDepartureTimeAsInfaretime;
+    public final Optional<Integer> outFlightTimeInMinutes;
+    public final Integer outSectorCount;
+    public final Integer outFlightSector1FlightCodeId;
+    public final Optional<Integer> outFlightSector2FlightCodeId;
+    public final Optional<Integer> outFlightSector3FlightCodeId;
+    public final Optional<Integer> homeFlightDepartureDateAsInfaredate;
+    public final Optional<Integer> homeFlightDepartureTimeAsInfaretime;
+    public final Optional<Integer> homeFlightTimeInMinutes;
+    public final Integer homeSectorCount;
+    public final Optional<Integer> homeFlightSector1FlightCodeId;
+    public final Optional<Integer> homeFlightSector2FlightCodeId;
+    public final Optional<Integer> homeFlightSector3FlightCodeId;
 
     private final Map<String, Supplier<?>> mappings;
 
@@ -156,7 +158,7 @@ class InfareRecord {
         return mappings;
     }
 
-    static InfareRecord fromLine(String line) {
+    public static InfareRecord fromLine(String line) {
         final String[] args = tab.split(line, 40);
 
         return new InfareRecord(
@@ -191,7 +193,7 @@ class InfareRecord {
                 optionalInt(args[28]));
     }
 
-    static Optional<Integer> optionalInt(String arg) {
+    public static Optional<Integer> optionalInt(String arg) {
         return Optional.ofNullable(arg)
                 .filter(isNotBlank())
                 .map(Integer::parseInt);
@@ -202,7 +204,7 @@ class InfareRecord {
 
     }
 
-    BoundStatement bindToStatement(PreparedStatement preparedStatement) {
+    public BoundStatement bindToStatement(PreparedStatement preparedStatement) {
         final Object[] valuesToBind = columns.stream()
                 .map(column -> {
                     try {
@@ -213,5 +215,22 @@ class InfareRecord {
                 })
                 .toArray();
         return preparedStatement.bind(valuesToBind);
+    }
+
+    public Map<String, Object> generateValues() {
+        return columns.stream()
+                .map(column -> new Pair<>(column, mappings.get(column).get()))
+                .filter(pair -> pair.right != null)
+                .collect(Collectors.toMap(pair -> pair.left, pair -> pair.right));
+    }
+
+    static class Pair<L, R> {
+        final L left;
+        final R right;
+
+        Pair(L left, R right) {
+            this.left = left;
+            this.right = right;
+        }
     }
 }

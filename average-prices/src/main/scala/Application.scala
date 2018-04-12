@@ -43,25 +43,7 @@ object Application extends App with Logging {
           }
 
           log.info(s"preparing to save data for $week")
-          //          tripsWithConvertedPrices.grouped(200)
-          //            .foreach { iterator =>
           CassandraRepository.save(session, preparedStatement, tripsWithConvertedPrices.toSeq)
-          //            }
-          //          sc.parallelize(tripsWithConvertedPrices.toSeq, 1)
-          //            .saveToCassandra("infare", "prices",
-          //              SomeColumns("week" as "week",
-          //                "weeks_bef" as "weeksBefore",
-          //                "c_id" as "carrier",
-          //                "class" as "bookingClass",
-          //                "site" as "bookingSite",
-          //                "one_way" as "isOneWay",
-          //                "orig" as "origin",
-          //                "dest" as "destination",
-          //                "out_dep_dte" as "outboundDepartureDate",
-          //                "out_dep_time" as "outboundDepartureTime",
-          //                "out_sec_cnt" as "outboundSectorCount",
-          //                "trip_price_avg_2" as "convertedPrice"))
-
           log.info(s"data saved for $week")
         }
       }

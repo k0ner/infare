@@ -2,6 +2,7 @@ package load.direct;
 
 import com.datastax.driver.core.BoundStatement;
 import com.datastax.driver.core.Session;
+import load.domain.InfareRecord;
 
 import org.apache.thrift.transport.TTransportException;
 import org.cassandraunit.CQLDataLoader;

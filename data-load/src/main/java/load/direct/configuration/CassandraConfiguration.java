@@ -2,7 +2,9 @@ package load.direct.configuration;
 
 import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.Session;
+import com.datastax.driver.core.policies.ConstantReconnectionPolicy;
 import load.direct.CassandraSink;
+import load.direct.LoaderRetryPolicy;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -31,6 +33,8 @@ public class CassandraConfiguration {
         return Cluster.builder()
                 .addContactPoints(cassandraHosts)
                 .withPort(cassandraPort)
+                .withReconnectionPolicy(new ConstantReconnectionPolicy(200))
+                .withRetryPolicy(new LoaderRetryPolicy(20))
                 .build();
     }
 

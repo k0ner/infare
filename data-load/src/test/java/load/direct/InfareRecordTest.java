@@ -1,5 +1,7 @@
 package load.direct;
 
+import load.domain.InfareRecord;
+
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;

@@ -1,4 +1,4 @@
-create table if not exists prices (
+create table if not exists %s.%s(
 week int,
 min_dte int,
 max_dte int,
@@ -29,4 +29,4 @@ hm_sec_cnt int,
 hm_sec_1 int,
 hm_sec_2 int,
 hm_sec_3 int,
-primary key (week, weeks_bef, c_id, class, site, one_way, orig, dest, out_dep_dte, out_dep_time, out_sec_cnt))
+primary key (week, weeks_bef, c_id, class, site, one_way, orig, dest, out_dep_dte, out_dep_time, out_sec_cnt));

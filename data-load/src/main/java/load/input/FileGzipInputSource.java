@@ -1,4 +1,6 @@
-package load.direct;
+package load.input;
+
+import load.domain.InfareRecord;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -8,13 +10,13 @@ import java.nio.file.Path;
 import java.util.stream.Stream;
 import java.util.zip.GZIPInputStream;
 
-public class FileInputSource implements InfareInputSource, AutoCloseable {
+public class FileGzipInputSource implements InfareInputSource {
 
     private final Path path;
     private InputStream inputStream;
     private BufferedReader bufferedReader;
 
-    FileInputSource(Path path) {
+    FileGzipInputSource(Path path) {
         this.path = path;
     }
 

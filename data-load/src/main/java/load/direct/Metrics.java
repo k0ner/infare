@@ -1,21 +1,19 @@
 package load.direct;
 
-import com.codahale.metrics.ConsoleReporter;
 import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
-
-import java.util.concurrent.TimeUnit;
+import com.codahale.metrics.Timer;
 
 final class Metrics {
 
-    public static final MetricRegistry metricRegistry = new MetricRegistry();
+    static final MetricRegistry metricRegistry = new MetricRegistry();
 
     static {
-        ConsoleReporter reporter = ConsoleReporter.forRegistry(metricRegistry)
-                .convertRatesTo(TimeUnit.SECONDS)
-                .convertDurationsTo(TimeUnit.MILLISECONDS)
-                .build();
-        reporter.start(5, TimeUnit.SECONDS);
+//        ConsoleReporter reporter = ConsoleReporter.forRegistry(metricRegistry)
+//                .convertRatesTo(TimeUnit.SECONDS)
+//                .convertDurationsTo(TimeUnit.MILLISECONDS)
+//                .build();
+//        reporter.start(5, TimeUnit.SECONDS);
     }
 
     static final Meter inserts = metricRegistry.meter("inserts");
@@ -24,4 +22,7 @@ final class Metrics {
     static final Meter succeededExecutions = metricRegistry.meter("succeeded-executions");
 
     static final Meter failedExecutions = metricRegistry.meter("failed-executions");
+
+    static final Timer batchExecuteTime = metricRegistry.timer("batch-execute-time");
+    static final Timer batchGenerateTime = metricRegistry.timer("batch-generate-time");
 }

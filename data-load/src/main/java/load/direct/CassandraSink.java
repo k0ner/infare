@@ -4,6 +4,7 @@ import com.datastax.driver.core.PreparedStatement;
 import com.datastax.driver.core.RegularStatement;
 import com.datastax.driver.core.Session;
 import com.datastax.driver.core.querybuilder.QueryBuilder;
+import load.domain.InfareRecord;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,6 +26,7 @@ public class CassandraSink {
     public final PreparedStatement insertStatement;
     private final Session session;
     private final String keyspace;
+    private final String table;
     private final Integer replicationFactor;
 
     public CassandraSink(Session session,
@@ -33,6 +35,7 @@ public class CassandraSink {
                          Integer replicationFactor) {
         this.session = session;
         this.keyspace = keyspace;
+        this.table = table;
         this.replicationFactor = replicationFactor;
 
         ensureKeyspaceCreated();
@@ -58,7 +61,7 @@ public class CassandraSink {
 
         final String cql;
         try {
-            cql = new String(Files.readAllBytes(Paths.get(resource.toURI())));
+            cql = String.format(new String(Files.readAllBytes(Paths.get(resource.toURI()))), keyspace, table);
             session.execute("use " + keyspace + "; ");
             session.execute(cql);
         } catch (IOException | URISyntaxException e) {
