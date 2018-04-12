@@ -10,7 +10,7 @@ object HttpFxService extends FxService {
   lazy val httpClient: CloseableHttpClient = createPool()
   val endpoint = "http://localhost:8080/currency"
 
-  implicit val formats = DefaultFormats
+  implicit val formats: DefaultFormats.type = DefaultFormats
 
   override def getPrice(price: BigDecimal): BigDecimal = {
     val response = httpClient.execute(new HttpGet(s"$endpoint?price=$price"))

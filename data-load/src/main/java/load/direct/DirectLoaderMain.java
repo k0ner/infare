@@ -1,6 +1,5 @@
 package load.direct;
 
-import com.codahale.metrics.ConsoleReporter;
 import com.codahale.metrics.Timer;
 import com.datastax.driver.core.BatchStatement;
 
@@ -12,10 +11,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.ComponentScan;
 
 import java.util.concurrent.ForkJoinPool;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
-
-import static load.direct.Metrics.metricRegistry;
 
 @SpringBootConfiguration
 @ComponentScan(value = "load.direct")
@@ -39,11 +35,6 @@ public class DirectLoaderMain implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        ConsoleReporter reporter = ConsoleReporter.forRegistry(metricRegistry)
-                .convertRatesTo(TimeUnit.SECONDS)
-                .convertDurationsTo(TimeUnit.MILLISECONDS)
-                .build();
-        reporter.start(5, TimeUnit.SECONDS);
 
         final Stream<BatchStatement> batchStatements = inserts.generate();
 

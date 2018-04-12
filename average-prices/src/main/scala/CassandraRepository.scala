@@ -1,4 +1,3 @@
-
 import com.datastax.driver.core.querybuilder.QueryBuilder
 import com.datastax.driver.core.querybuilder.QueryBuilder.bindMarker
 import com.datastax.driver.core.{BatchStatement, PreparedStatement, Session}
@@ -42,19 +41,6 @@ object CassandraRepository {
             x.outboundDepartureTime,
             x.outboundSectorCount,
             x.convertedPrice)
-        //        val valuesToBind = Seq( x.week,
-        //          x.weeksBefore,
-        //          x.carrier,
-        //          x.bookingClass,
-        //          x.bookingSite,
-        //          x.isOneWay,
-        //          x.origin,
-        //          x.destination,
-        //          x.outboundDepartureDate,
-        //          x.outboundDepartureTime,
-        //          x.outboundSectorCount,
-        //          x.convertedPrice)
-        //        statement.bind(valuesToBind.toArray)
       })
 
     val batch = new BatchStatement(BatchStatement.Type.UNLOGGED)
