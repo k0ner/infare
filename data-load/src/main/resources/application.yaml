@@ -1,5 +1,5 @@
 infare:
-  input.url: https://infare-dev-external-dpcandidate.s3.amazonaws.com/hive_csv_altus_gz/part-00000.gz
+  input-urls: https://infare-dev-external-dpcandidate.s3.amazonaws.com/hive_csv_altus_gz/part-00000.gz
 
 output:
   directory: /tmp/infare/prices

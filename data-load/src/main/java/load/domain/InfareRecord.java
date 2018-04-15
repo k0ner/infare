@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.regex.Pattern;
@@ -18,11 +19,14 @@ import static java.util.Arrays.asList;
 
 public class InfareRecord {
 
+    private static final AtomicInteger counter =
+            new AtomicInteger(1 + Integer.parseInt(System.getProperty("records.offset", "0")));
+
     public static final List<String> columns = asList(
             "week", "min_dte", "max_dte", "weeks_bef", "c_id", "class", "site", "s_type", "one_way", "orig", "dest",
             "min_stay", "price_min", "price_max", "price_avg", "agg_cnt", "out_dep_dte", "out_dep_time", "out_fl_dur",
             "out_sec_cnt", "out_sec_1", "out_sec_2", "out_sec_3", "hm_dep_dte", "hm_dep_time", "hm_fl_dur",
-            "hm_sec_cnt", "hm_sec_1", "hm_sec_2", "hm_sec_3");
+            "hm_sec_cnt", "hm_sec_1", "hm_sec_2", "hm_sec_3", "id");
 
     private static final Pattern tab = Pattern.compile("\\t");
 
@@ -55,6 +59,7 @@ public class InfareRecord {
     public final Optional<Integer> homeFlightSector1FlightCodeId;
     public final Optional<Integer> homeFlightSector2FlightCodeId;
     public final Optional<Integer> homeFlightSector3FlightCodeId;
+    private final Integer id;
 
     private final Map<String, Supplier<?>> mappings;
 
@@ -117,6 +122,7 @@ public class InfareRecord {
         this.homeFlightSector1FlightCodeId = homeFlightSector1FlightCodeId;
         this.homeFlightSector2FlightCodeId = homeFlightSector2FlightCodeId;
         this.homeFlightSector3FlightCodeId = homeFlightSector3FlightCodeId;
+        this.id = counter.getAndIncrement();
 
         this.mappings = generateMappings();
     }
@@ -154,6 +160,7 @@ public class InfareRecord {
         mappings.put("hm_sec_1", () -> this.homeFlightSector1FlightCodeId.orElse(null));
         mappings.put("hm_sec_2", () -> this.homeFlightSector2FlightCodeId.orElse(null));
         mappings.put("hm_sec_3", () -> this.homeFlightSector3FlightCodeId.orElse(null));
+        mappings.put("id", () -> this.id);
 
         return mappings;
     }
@@ -195,8 +202,8 @@ public class InfareRecord {
 
     public static Optional<Integer> optionalInt(String arg) {
         return Optional.ofNullable(arg)
-                .filter(isNotBlank())
-                .map(Integer::parseInt);
+                       .filter(isNotBlank())
+                       .map(Integer::parseInt);
     }
 
     private static Predicate<String> isNotBlank() {
@@ -206,22 +213,25 @@ public class InfareRecord {
 
     public BoundStatement bindToStatement(PreparedStatement preparedStatement) {
         final Object[] valuesToBind = columns.stream()
-                .map(column -> {
-                    try {
-                        return mappings.get(column).get();
-                    } catch (NullPointerException e) {
-                        throw new RuntimeException(e);
-                    }
-                })
-                .toArray();
+                                             .map(column -> {
+                                                 try {
+                                                     return mappings.get(column)
+                                                                    .get();
+                                                 } catch (NullPointerException e) {
+                                                     throw new RuntimeException(e);
+                                                 }
+                                             })
+                                             .toArray();
         return preparedStatement.bind(valuesToBind);
     }
 
     public Map<String, Object> generateValues() {
         return columns.stream()
-                .map(column -> new Pair<>(column, mappings.get(column).get()))
-                .filter(pair -> pair.right != null)
-                .collect(Collectors.toMap(pair -> pair.left, pair -> pair.right));
+                      .map(column -> new Pair<>(column,
+                                                mappings.get(column)
+                                                        .get()))
+                      .filter(pair -> pair.right != null)
+                      .collect(Collectors.toMap(pair -> pair.left, pair -> pair.right));
     }
 
     static class Pair<L, R> {

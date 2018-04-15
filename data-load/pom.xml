@@ -7,11 +7,10 @@
     <parent>
         <groupId>me.konradtendera</groupId>
         <artifactId>infare</artifactId>
-        <version>0.1-SNAPSHOT</version>
+        <version>0.2-SNAPSHOT</version>
     </parent>
 
     <artifactId>data-load</artifactId>
-    <version>0.2-SNAPSHOT</version>
 
     <dependencyManagement>
         <dependencies>
