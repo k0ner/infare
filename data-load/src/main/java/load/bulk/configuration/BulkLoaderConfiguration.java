@@ -19,6 +19,8 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.function.Supplier;
 
 import static com.datastax.driver.core.querybuilder.QueryBuilder.bindMarker;
 import static java.util.stream.Collectors.toList;
@@ -29,38 +31,52 @@ public class BulkLoaderConfiguration {
     @Bean
     public InfareInputSource httpInputSource(Infare infare) {
         return new MultiInputSources(
-                infare.getInputUrls().stream()
-                        .map(HttpFileInputSource::new)
-                        .collect(toList()));
+                infare.getInputUrls()
+                      .stream()
+                      .map(HttpFileInputSource::new)
+                      .collect(toList()));
     }
 
     @Bean
-    public CQLSSTableWriter tableWriter(@Value("${cassandra.keyspace}") String keyspace,
-                                        @Value("${cassandra.table}") String table,
-                                        @Value("${output.directory}") String outputDirectory,
-                                        @Value("${schema.path}") String schemaPath) throws IOException {
+    public List<CQLSSTableWriter> writers() {
+        return new CopyOnWriteArrayList<>();
+    }
+
+    @Bean
+    public Supplier<CQLSSTableWriter> tableWriter(@Value("${cassandra.keyspace}") String keyspace,
+                                                  @Value("${cassandra.table}") String table,
+                                                  @Value("${output.directory}") String outputDirectory,
+                                                  @Value("${schema.path}") String schemaPath) throws IOException {
 
         Files.createDirectories(Paths.get(outputDirectory));
 
         final List<Object> bindMarkers = InfareRecord.columns.stream()
-                .map(ignored -> bindMarker())
-                .collect(toList());
+                                                             .map(ignored -> bindMarker())
+                                                             .collect(toList());
 
         final RegularStatement statement = QueryBuilder.insertInto(keyspace, table)
-                .values(InfareRecord.columns, bindMarkers);
+                                                       .values(InfareRecord.columns, bindMarkers);
 
-        return CQLSSTableWriter.builder().inDirectory(outputDirectory)
-                .forTable(schema(schemaPath, keyspace, table))
-                .using(statement.getQueryString())
-                .withPartitioner(new Murmur3Partitioner())
-                .build();
+        return () -> {
+            final CQLSSTableWriter writer = CQLSSTableWriter.builder()
+                                                            .inDirectory(outputDirectory)
+                                                            .forTable(schema(schemaPath, keyspace, table))
+                                                            .using(statement.getQueryString())
+                                                            .withBufferSizeInMB(32)
+                                                            .withPartitioner(new Murmur3Partitioner())
+                                                            .build();
+            writers().add(writer);
+            return writer;
+        };
     }
 
     private String schema(String schemaPath,
                           String keyspace,
                           String table) {
         try {
-            final URL resource = this.getClass().getClassLoader().getResource(schemaPath);
+            final URL resource = this.getClass()
+                                     .getClassLoader()
+                                     .getResource(schemaPath);
             return String.format(new String(Files.readAllBytes(Paths.get(resource.toURI()))), keyspace, table);
         } catch (IOException | URISyntaxException e) {
             throw new RuntimeException(e);

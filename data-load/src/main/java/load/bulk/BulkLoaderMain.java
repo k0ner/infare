@@ -10,20 +10,25 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.function.Supplier;
 
 @SpringBootApplication
 @EnableConfigurationProperties
 public class BulkLoaderMain implements CommandLineRunner {
 
     private final InfareInputSource infareInputSource;
-    private final CQLSSTableWriter writer;
+    private final ThreadLocal<CQLSSTableWriter> writer;
+    private final List<CQLSSTableWriter> writers;
 
     @Autowired
     public BulkLoaderMain(InfareInputSource infareInputSource,
-                          CQLSSTableWriter writer) {
+                          Supplier<CQLSSTableWriter> writerSupplier,
+                          List<CQLSSTableWriter> writers) {
 
         this.infareInputSource = infareInputSource;
-        this.writer = writer;
+        this.writer = ThreadLocal.withInitial(writerSupplier);
+        this.writers = writers;
     }
 
     @Override
@@ -31,15 +36,25 @@ public class BulkLoaderMain implements CommandLineRunner {
 
         infareInputSource
                 .get()
+                .parallel()
                 .forEach(infareRecord -> {
                     try {
                         Metrics.lines.mark();
-                        writer.addRow(infareRecord.generateValues());
+                        writer.get()
+                              .addRow(infareRecord.generateValues());
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
                 });
-        writer.close();
+
+        writers.forEach(writer -> {
+            try {
+                writer.close();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
+
     }
 
     public static void main(String[] args) {

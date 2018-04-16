@@ -1,8 +1,25 @@
 infare:
-  input-urls: https://infare-dev-external-dpcandidate.s3.amazonaws.com/hive_csv_altus_gz/part-00000.gz
+  input-urls:
+    - https://infare-dev-external-dpcandidate.s3.amazonaws.com/hive_csv_altus_gz/part-00000.gz
+    - https://infare-dev-external-dpcandidate.s3.amazonaws.com/hive_csv_altus_gz/part-00001.gz
+    - https://infare-dev-external-dpcandidate.s3.amazonaws.com/hive_csv_altus_gz/part-00002.gz
+    - https://infare-dev-external-dpcandidate.s3.amazonaws.com/hive_csv_altus_gz/part-00003.gz
+    - https://infare-dev-external-dpcandidate.s3.amazonaws.com/hive_csv_altus_gz/part-00004.gz
+    - https://infare-dev-external-dpcandidate.s3.amazonaws.com/hive_csv_altus_gz/part-00005.gz
+    - https://infare-dev-external-dpcandidate.s3.amazonaws.com/hive_csv_altus_gz/part-00006.gz
+    - https://infare-dev-external-dpcandidate.s3.amazonaws.com/hive_csv_altus_gz/part-00007.gz
+    - https://infare-dev-external-dpcandidate.s3.amazonaws.com/hive_csv_altus_gz/part-00008.gz
+    - https://infare-dev-external-dpcandidate.s3.amazonaws.com/hive_csv_altus_gz/part-00009.gz
+    - https://infare-dev-external-dpcandidate.s3.amazonaws.com/hive_csv_altus_gz/part-00010.gz
+    - https://infare-dev-external-dpcandidate.s3.amazonaws.com/hive_csv_altus_gz/part-00011.gz
+    - https://infare-dev-external-dpcandidate.s3.amazonaws.com/hive_csv_altus_gz/part-00012.gz
+    - https://infare-dev-external-dpcandidate.s3.amazonaws.com/hive_csv_altus_gz/part-00013.gz
+    - https://infare-dev-external-dpcandidate.s3.amazonaws.com/hive_csv_altus_gz/part-00014.gz
+    - https://infare-dev-external-dpcandidate.s3.amazonaws.com/hive_csv_altus_gz/part-00015.gz
+    - https://infare-dev-external-dpcandidate.s3.amazonaws.com/hive_csv_altus_gz/part-00016.gz
 
 output:
-  directory: /tmp/infare/prices
+  directory: /tmp/infare/prices2
 
 schema:
   path: cql/prices.cql
