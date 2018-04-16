@@ -1,9 +1,9 @@
 trait FxService {
 
-  def getPrice(price: BigDecimal): BigDecimal
+  def getPrice(price: BigDecimal): Option[BigDecimal]
 
 }
 
 object FixedFxService extends FxService {
-  override def getPrice(price: BigDecimal): BigDecimal = 2 * price
+  override def getPrice(price: BigDecimal): Option[BigDecimal] = Some(2 * price)
 }

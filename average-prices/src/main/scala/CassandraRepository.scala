@@ -7,7 +7,7 @@ import scala.collection.JavaConversions._
 object CassandraRepository {
 
   def bind(session: Session): PreparedStatement = {
-    val statement = QueryBuilder.insertInto("infare", "prices")
+    val statement = QueryBuilder.insertInto("infare", "prices2")
       .value("week", bindMarker())
       .value("weeks_bef", bindMarker())
       .value("c_id", bindMarker())
@@ -19,6 +19,7 @@ object CassandraRepository {
       .value("out_dep_dte", bindMarker())
       .value("out_dep_time", bindMarker())
       .value("out_sec_cnt", bindMarker())
+      .value("id", bindMarker())
       .value("trip_price_avg_2", bindMarker())
 
     session.prepare(statement)
@@ -30,17 +31,18 @@ object CassandraRepository {
       .map(x => {
         statement
           .bind(x.week,
-            x.weeksBefore,
-            x.carrier,
-            x.bookingClass,
-            x.bookingSite,
-            x.isOneWay,
-            x.origin,
-            x.destination,
-            x.outboundDepartureDate,
-            x.outboundDepartureTime,
-            x.outboundSectorCount,
-            x.convertedPrice)
+                x.weeksBefore,
+                x.carrier,
+                x.bookingClass,
+                x.bookingSite,
+                x.isOneWay,
+                x.origin,
+                x.destination,
+                x.outboundDepartureDate,
+                x.outboundDepartureTime,
+                x.outboundSectorCount,
+                x.id,
+                x.convertedPrice.orNull)
       })
 
     val batch = new BatchStatement(BatchStatement.Type.UNLOGGED)
