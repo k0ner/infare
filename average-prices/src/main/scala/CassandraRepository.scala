@@ -2,8 +2,6 @@ import com.datastax.driver.core.querybuilder.QueryBuilder
 import com.datastax.driver.core.querybuilder.QueryBuilder.bindMarker
 import com.datastax.driver.core.{BatchStatement, PreparedStatement, Session}
 
-import scala.collection.JavaConversions._
-
 object CassandraRepository {
 
   def bind(session: Session): PreparedStatement = {
@@ -25,30 +23,39 @@ object CassandraRepository {
     session.prepare(statement)
   }
 
-  def save(session: Session, statement: PreparedStatement, tripsWithConvertedPrices: Seq[TripWithConvertedPrice]): Unit = {
+  def save(session: Session,
+           statement: PreparedStatement,
+           tripsWithConvertedPrices: Seq[TripWithConvertedPrice]): Unit = {
 
-    val statements = tripsWithConvertedPrices
-      .map(x => {
-        statement
-          .bind(x.week,
-                x.weeksBefore,
-                x.carrier,
-                x.bookingClass,
-                x.bookingSite,
-                x.isOneWay,
-                x.origin,
-                x.destination,
-                x.outboundDepartureDate,
-                x.outboundDepartureTime,
-                x.outboundSectorCount,
-                x.id,
-                x.convertedPrice.orNull)
-      })
+    val batches = tripsWithConvertedPrices
+      .grouped(2000)
+      .map(singleBatch =>
+        singleBatch.map(x => {
+          statement
+            .bind(x.week,
+              x.weeksBefore,
+              x.carrier,
+              x.bookingClass,
+              x.bookingSite,
+              x.isOneWay,
+              x.origin,
+              x.destination,
+              x.outboundDepartureDate,
+              x.outboundDepartureTime,
+              x.outboundSectorCount,
+              x.id,
+              x.convertedPrice)
+        }))
 
-    val batch = new BatchStatement(BatchStatement.Type.UNLOGGED)
-    batch.addAll(statements)
+    batches.foreach { statements =>
+      import scala.collection.JavaConversions._
 
-    session.execute(batch)
+      Metrics.rows.mark(statements.size)
+
+      val batch = new BatchStatement(BatchStatement.Type.UNLOGGED)
+      batch.addAll(statements)
+      session.execute(batch)
+    }
   }
 
 }

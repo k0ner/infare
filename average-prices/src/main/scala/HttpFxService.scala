@@ -27,9 +27,9 @@ object HttpFxService extends FxService {
     def doRetry() = {
       retry.Backoff(delay = Duration(100, TimeUnit.MILLISECONDS), max = 5)
         .apply(() => Future {
-                              val response = httpClient.execute(new HttpGet(s"$endpoint?price=$price"))
-                              (parse(EntityUtils.toString(response.getEntity)) \\ "price").extractOpt[BigDecimal]
-                            })
+          val response = httpClient.execute(new HttpGet(s"$endpoint?price=$price"))
+          (parse(EntityUtils.toString(response.getEntity)) \\ "price").extractOpt[BigDecimal]
+        })
     }
 
     Try(Await.result(doRetry(), Duration(3, TimeUnit.SECONDS))) match {
