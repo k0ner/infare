@@ -7,7 +7,7 @@ import org.springframework.data.cassandra.core.mapping.Table;
 
 import java.math.BigDecimal;
 
-@Table("prices")
+@Table("prices2")
 public class Trip {
 
     @PrimaryKeyColumn(name = "week", ordinal = 0, type = PrimaryKeyType.PARTITIONED)
@@ -42,6 +42,9 @@ public class Trip {
 
     @PrimaryKeyColumn(name = "out_sec_cnt", ordinal = 9, type = PrimaryKeyType.CLUSTERED)
     private Integer outSectorCount;
+
+    @PrimaryKeyColumn(name = "id", ordinal = 10, type = PrimaryKeyType.CLUSTERED)
+    private Integer id;
 
     @Column("price_min")
     private BigDecimal tripPriceMin;
@@ -129,7 +132,8 @@ public class Trip {
                 Integer homeSectorCount,
                 Integer homeFlightSector1FlightCodeId,
                 Integer homeFlightSector2FlightCodeId,
-                Integer homeFlightSector3FlightCodeId) {
+                Integer homeFlightSector3FlightCodeId,
+                Integer id) {
         this.week = week;
         this.fullWeeksBeforeDeparture = fullWeeksBeforeDeparture;
         this.carrierId = carrierId;
@@ -160,6 +164,7 @@ public class Trip {
         this.homeFlightSector1FlightCodeId = homeFlightSector1FlightCodeId;
         this.homeFlightSector2FlightCodeId = homeFlightSector2FlightCodeId;
         this.homeFlightSector3FlightCodeId = homeFlightSector3FlightCodeId;
+        this.id = id;
     }
 
     public Integer getWeek() {
@@ -400,6 +405,14 @@ public class Trip {
 
     public void setHomeFlightSector3FlightCodeId(Integer homeFlightSector3FlightCodeId) {
         this.homeFlightSector3FlightCodeId = homeFlightSector3FlightCodeId;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
     }
 }
 

@@ -1,5 +1,5 @@
 cassandra:
   keyspace: infare
-  table: prices
+  table: prices2
   hosts: localhost
   port: 9042
