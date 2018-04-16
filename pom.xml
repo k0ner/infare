@@ -6,7 +6,7 @@
 
     <groupId>me.konradtendera</groupId>
     <artifactId>infare</artifactId>
-    <version>0.1-SNAPSHOT</version>
+    <version>0.2-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <properties>
@@ -17,6 +17,7 @@
         <module>data-load</module>
         <module>average-prices</module>
         <module>rest-service</module>
+        <module>data-mining</module>
     </modules>
 
 </project>
